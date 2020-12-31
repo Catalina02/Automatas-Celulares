@@ -1,0 +1,423 @@
+//Gonzalo Paillacan
+//Catalina Bustos
+
+#include <ctime>   //para ocupar la hora como semilla del random
+#include <stdlib.h>
+#include <iostream>
+#include <windows.h>
+#include "conio.h"
+#define largo 500
+
+using namespace std;
+
+//Variables Globales
+    extern int vRand[largo]; //Vector con 1s y 0s aleatorios
+    extern int vUnico1[largo];//vector de 0s con un 1 en ubicacion aleatoria
+    extern int vTrans[largo];//vector auxiliar
+
+
+//Funciones Vector
+    void vectorRandom()
+    {
+        srand(time(NULL));
+        for(int x=0;x<largo;x++)
+        {
+            vRand[x]=rand()%2;
+        }
+    }
+
+    void vectorUnico1()
+    {
+        srand(time(NULL));
+        for(int x=0;x<500;x++)
+        {
+            vUnico1[x]=0;
+        }
+        vUnico1[1]=1; //ubicacion de 1 aleatoria
+    }
+
+    void mostrarVector(int v[])
+    {
+        for(int x=0;x<500;x++)
+        {
+            std::cout<<v[x];
+        }
+    }
+
+    void copiarVector(int v[],int w[])
+    {
+        for(int k=0;k<largo;k++)
+            {
+                v[k]=w[k];
+            }
+    }
+
+//Reglas.h
+
+//Reglas
+
+    void Regla1(int v[],int i,int pos1, int pos2)//i,i= iteradores;  pos1,pos2=valores para aiustar el fin del arreglo con su inicio
+    {
+        if(v[i]==0 && v[i+pos1]==0 && v[i+pos2]==0)//000
+            vTrans[i]=0;
+
+        if(v[i]==0 && v[i+pos1]==0 && v[i+pos2]==1)//001
+            vTrans[i]=1;
+
+        if(v[i]==0 && v[i+pos1]==1 && v[i+pos2]==0)//010
+            vTrans[i]=1;
+
+        if(v[i]==0 && v[i+pos1]==1 && v[i+pos2]==1)//011
+            vTrans[i]=0;
+
+        if(v[i]==1 && v[i+pos1]==0 && v[i+pos2]==0)//100
+            vTrans[i]=1;
+
+        if(v[i]==1 && v[i+pos1]==0 && v[i+pos2]==1)//101
+            vTrans[i]=0;
+
+        if(v[i]==1 && v[i+pos1]==1 && v[i+pos2]==0)//110
+            vTrans[i]=0;
+
+        if(v[i]==1 && v[i+pos1]==1 && v[i+pos2]==1)//111
+            vTrans[i]=0;
+    }
+
+    void ReglaMayoria(int v[],int i,int pos1, int pos2)//i,i= iteradores;  pos1,pos2=valores para aiustar el fin del arreglo con su inicio
+    {
+        if(v[i]==0 && v[i+pos1]==0 && v[i+pos2]==0)//000
+            vTrans[i]=0;
+
+        if(v[i]==0 && v[i+pos1]==0 && v[i+pos2]==1)//001
+            vTrans[i]=0;
+
+        if(v[i]==0 && v[i+pos1]==1 && v[i+pos2]==0)//010
+            vTrans[i]=0;
+
+        if(v[i]==0 && v[i+pos1]==1 && v[i+pos2]==1)//011
+            vTrans[i]=1;
+
+        if(v[i]==1 && v[i+pos1]==0 && v[i+pos2]==0)//100
+            vTrans[i]=0;
+
+        if(v[i]==1 && v[i+pos1]==0 && v[i+pos2]==1)//101
+            vTrans[i]=1;
+
+        if(v[i]==1 && v[i+pos1]==1 && v[i+pos2]==0)//110
+            vTrans[i]=1;
+
+        if(v[i]==1 && v[i+pos1]==1 && v[i+pos2]==1)//111
+            vTrans[i]=1;
+    }
+
+    void Regla110(int v[],int i,int pos1, int pos2)
+    {
+        if(v[i]==0 && v[i+pos1]==0 && v[i+pos2]==0)//000
+            vTrans[i]=0;
+
+        if(v[i]==0 && v[i+pos1]==0 && v[i+pos2]==1)//001
+            vTrans[i]=1;
+
+        if(v[i]==0 && v[i+pos1]==1 && v[i+pos2]==0)//010
+            vTrans[i]=1;
+
+        if(v[i]==0 && v[i+pos1]==1 && v[i+pos2]==1)//011
+            vTrans[i]=1;
+
+        if(v[i]==1 && v[i+pos1]==0 && v[i+pos2]==0)//100
+            vTrans[i]=0;
+
+        if(v[i]==1 && v[i+pos1]==0 && v[i+pos2]==1)//101
+            vTrans[i]=1;
+
+        if(v[i]==1 && v[i+pos1]==1 && v[i+pos2]==0)//110
+            vTrans[i]=1;
+
+        if(v[i]==1 && v[i+pos1]==1 && v[i+pos2]==1)//111
+            vTrans[i]=0;
+    }
+
+
+//Creadores del Automata
+    void AplicarRegla1(int v[])
+    {
+        int x,i;
+        for(x=0;x<300;x++)
+        {
+            for(i=0;i<=largo-2;i++)
+            {
+
+                Regla1(v,i,1,2);
+            }
+
+            Regla1(v,largo-1,1,(-largo+1));
+            Regla1(v,largo,-(largo),(-largo+1));
+
+            copiarVector(v,vTrans);
+            mostrarVector(v);
+
+            std::cout<<std::endl;
+        }
+    }
+
+    void AplicarReglaMayoria(int v[])
+    {
+        int x,i;
+        for(x=0;x<300;x++)
+        {
+            for(i=0;i<=largo-2;i++)
+            {
+
+                ReglaMayoria(v,i,1,2);
+            }
+
+            ReglaMayoria(v,largo-1,1,(-largo+1));
+            ReglaMayoria(v,largo,-(largo),(-largo+1));
+
+            copiarVector(v,vTrans);
+            mostrarVector(v);
+
+            std::cout<<std::endl;
+        }
+    }
+
+    void AplicarRegla110(int v[])
+    {
+        int x,i;
+        for(x=0;x<300;x++)
+        {
+            for(i=0;i<=largo-2;i++)
+            {
+
+                Regla110(v,i,1,2);
+            }
+
+            Regla110(v,largo-1,1,(-largo+1));
+            Regla110(v,largo,-(largo),(-largo+1));
+
+            copiarVector(v,vTrans);
+            mostrarVector(v);
+
+            std::cout<<std::endl;
+        }
+    }
+
+//Salida de Pantalla
+//Ventana.h
+
+//Estructura de la Libreria Wincon.h (include Windows.h)
+//Fuente: https://docs.microsoft.com/en-us/windows/console/console-font-infoex
+//        https://docs.microsoft.com/en-us/windows/console/setcurrentconsolefontex
+
+    typedef struct _CONSOLE_FONT_INFOEX
+    {
+        ULONG cbSize;
+        DWORD nFont;
+        COORD dwFontSize;
+        UINT  FontFamily;
+        UINT  FontWeight;
+        WCHAR FaceName[LF_FACESIZE];
+    }CONSOLE_FONT_INFOEX, *PCONSOLE_FONT_INFOEX;
+    //the function declaration begins
+    #ifdef __cplusplus
+    extern "C" {
+    #endif
+    BOOL WINAPI SetCurrentConsoleFontEx(HANDLE hConsoleOutput, BOOL bMaximumWindow, PCONSOLE_FONT_INFOEX lpConsoleCurrentFontEx);
+    BOOL WINAPI GetCurrentConsoleFontEx(HANDLE hConsoleOutput, BOOL bMaximumWindow, PCONSOLE_FONT_INFOEX lpConsoleCurrentFontEx);
+    #ifdef __cplusplus
+    }
+    #endif
+
+
+//Función Para cambiar Tamaño de la Fuente
+
+    void setFontSize(int alto,int ancho)
+    {
+        HANDLE outcon = GetStdHandle(STD_OUTPUT_HANDLE);
+        CONSOLE_FONT_INFOEX cfi={0};
+        cfi.cbSize = sizeof(cfi);
+        cfi.dwFontSize.X = ancho;
+        cfi.dwFontSize.Y = alto;
+        cfi.FontFamily = FF_DONTCARE;
+        cfi.FontWeight = FW_NORMAL;
+        SetCurrentConsoleFontEx(outcon, NULL, &cfi);
+    }
+
+
+
+//Abre la Pantalla Completa:
+//Alt+Enter
+    void AltEnter()
+    {
+        keybd_event(VK_MENU,//Se Presiona Alt
+                    0x38,
+                    0,
+                    0);
+        keybd_event(VK_RETURN,
+                    0x1c,
+                    0,
+                    0);
+        keybd_event(VK_RETURN,//Se Presiona Enter
+                    0x1c,
+                    KEYEVENTF_KEYUP,
+                    0);
+        keybd_event(VK_MENU,
+                    0x38,
+                    KEYEVENTF_KEYUP,
+                    0);
+                    return;
+    }
+
+
+// Menu.h
+
+void Menu();
+
+void otraConsulta()
+{
+    int cons;
+    system("Pause");
+    system("cls");
+    setFontSize(16,10);
+    cout<<endl<<endl<<"  ¿Desea Realizar Otra Consulta?"<<endl<<endl<<"  1)Si\n  2)No"<<endl<<endl<<"  Resp:";
+    cin>>cons;
+    AltEnter();
+    system("cls");
+    if(cons==1)
+       {
+          Menu();
+       }
+
+    if(cons!=1 && cons!=2)
+    {
+       system("cls");
+       otraConsulta();
+    }
+
+}
+
+void Menu()
+{
+    setFontSize(16,10);
+    vectorRandom();
+    vectorUnico1();
+
+    int opc;
+
+    cout<<endl<<endl<<"     ---------------Automatas Celulares----------------";
+    cout<<endl<<endl<<endl<<endl;
+    cout<<"   Seleccione una Regla: \n\n     1) Regla del 1 \n\n     2) Regla de la Mayoria \n\n     3) Regla del 110"<<endl<<"\n      Resp: ";
+    cin>>opc;
+
+    switch (opc)
+    {
+    case 1:
+        system("cls");
+        setFontSize(16,10);
+
+        cout<<endl<<endl<<"  Regla 1:"<<endl<<endl<<"   Vector de 0-1 Aleatorio"<<endl<<endl<<endl<<endl;
+        system("Pause");
+        system("cls");
+
+
+
+        setFontSize(5,2);
+        AltEnter();
+
+        AplicarRegla1(vRand);
+        system("Pause");
+        system("cls");
+
+        setFontSize(16,10);
+        cout<<endl<<endl<<"  Regla 1:"<<endl<<endl<<"   Vector con Unico 1"<<endl<<endl<<endl<<endl;
+        system("Pause");
+        system("cls");
+
+        setFontSize(5,2);
+        AplicarRegla1(vUnico1);
+
+        otraConsulta();
+        break;
+
+    case 2:
+        system("cls");
+        setFontSize(16,10);
+
+        cout<<endl<<endl<<"  Regla Mayoria:"<<endl<<endl<<"   Vector de 0-1 Aleatorio"<<endl<<endl<<endl<<endl;
+        system("Pause");
+        system("cls");
+
+
+
+        setFontSize(5,2);
+        AltEnter();
+
+        AplicarReglaMayoria(vRand);
+        system("Pause");
+        system("cls");
+
+        setFontSize(16,10);
+        cout<<endl<<endl<<"  Regla Mayoria:"<<endl<<endl<<endl<<"   Vector con Unico 1"<<endl<<endl<<endl<<endl;
+        system("Pause");
+        system("cls");
+
+        setFontSize(5,2);
+        AplicarReglaMayoria(vUnico1);
+
+        otraConsulta();
+        break;
+
+    case 3:
+        system("cls");
+        setFontSize(16,10);
+
+        cout<<endl<<endl<<  "Regla 110:"<<endl<<endl<<endl<<"   Vector 0-1 Aleatorio"<<endl<<endl<<endl<<endl;
+        system("Pause");
+        system("cls");
+
+
+
+        setFontSize(5,2);
+        AltEnter();
+
+        AplicarRegla110(vRand);
+        system("Pause");
+        system("cls");
+
+        setFontSize(16,10);
+        cout<<endl<<endl<<"  Regla 110:"<<endl<<endl<<endl<<"   Vector con Unico 1"<<endl<<endl<<endl<<endl;
+        system("Pause");
+        system("cls");
+
+        setFontSize(5,2);
+        AplicarRegla110(vUnico1);
+
+        otraConsulta();
+        break;
+
+    default:
+
+        system("cls");
+        Menu();
+    }
+
+}
+
+
+//Main
+
+//Variables Globales
+    int vRand[largo]; //Vector con 1s y 0s aleatorios
+    int vUnico1[largo];//vector de 0s con un 1 en ubicacion aleatoria
+    int vTrans[largo];//vector auxiliar
+
+
+int main()
+{
+
+    SetConsoleTitle("Automatas Celulares");
+
+    Menu();
+
+}
+
